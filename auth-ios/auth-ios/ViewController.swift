@@ -13,16 +13,15 @@ import SafariServices
 class ViewController: UIViewController {
     
     var safariVC: SFSafariViewController!
-    let authURL = URL(string: "http://localhost:4000/oauth/authorize")!
+    let authURL = URL(string: "http://localhost:4000/oauth/authorize/native")!
     let tokenEndpoint = URL(string: "http://localhost:4000/oauth/token")!
-    let clientId = "8417130ee486e5f9a873e3ebb52ee180165bc02587413c461e60dfd0e6eb01d7"
+    let clientId = "8005ed447a468abf7df5f7ee7fe3fb4732e96c11a1da6390da0aeae5dd810508"
     let redirectURL = URL(string: "localhost://redirect_url")!
     let kAppAuthExampleAuthStateKey: String = "authState";
     let issuerURL = URL(string: "http://localhost:4000")!
     
     private var authState: OIDAuthState?
 
-    
     override func viewDidLoad() {
         super.viewDidLoad()
     }
@@ -40,12 +39,11 @@ class ViewController: UIViewController {
         appAuthButton.addTarget(self, action: #selector(loginAction), for: .touchUpInside)
         view.addSubview(appAuthButton)
         
-    
     }
 
-    
+
     @objc func loginAction() {
-        let configuration = OIDServiceConfiguration(authorizationEndpoint: authURL, tokenEndpoint: tokenEndpoint, issuer: issuerURL)
+        let configuration = OIDServiceConfiguration(authorizationEndpoint: authURL, tokenEndpoint: tokenEndpoint, issuer: nil)
         doAuthWithAutoCodeExchange(configuration: configuration, clientID: clientId, clientSecret: nil)
     }
     
@@ -70,17 +68,21 @@ extension ViewController {
                                               responseType: OIDResponseTypeCode,
                                               additionalParameters: nil)
         
+        
+//        let request = OIDAuthorizationRequest(configuration: configuration, clientId: clientID, clientSecret: nil, scope: OIDScopeOpenID, redirectURL: redirectURL, responseType: OIDResponseTypeCode, state: kAppAuthExampleAuthStateKey, nonce: nil, codeVerifier: nil, codeChallenge: nil, codeChallengeMethod: nil, additionalParameters: nil)
+        
         // performs authentication request
         print("Initiating authorization request with scope: \(request.scope ?? "DEFAULT_SCOPE")")
+        
         
         appDelegate.currentAuthorizationFlow = OIDAuthState.authState(byPresenting: request, presenting: self) { authState, error in
             
             if let authState = authState {
-                self.setAuthState(authState)
+//                self.setAuthState(authState)
                 print("Got authorization tokens. Access token: \(authState.lastTokenResponse?.accessToken ?? "DEFAULT_TOKEN")")
             } else {
                 print("Authorization error: \(error?.localizedDescription ?? "DEFAULT_ERROR")")
-                self.setAuthState(nil)
+//                self.setAuthState(nil)
             }
         }
     }
